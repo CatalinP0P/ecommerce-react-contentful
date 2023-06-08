@@ -18,6 +18,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "paths": {
+      "@assets/*" : ["./src/assets"]
+    },
     "jsx": "react-jsx",
     "typeRoots" : ["node_modules/@types", "src/types"]
   },

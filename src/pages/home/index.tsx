@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Home() {
     return (
@@ -21,34 +22,39 @@ export default function Home() {
                 Buy
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-3 mx-auto w-[60%] md:w-full py-16 gap-4">
-                <div className="flex flex-col gap-4 transition-all hover:bg-stone-50 p-8 font-thin rounded-3xl cursor-pointer">
-                    <img
-                        className="aspect-square"
-                        src={require('../../assets/blend.webp')}
-                    ></img>
-                    <label className="text-3xl text-center w-full">
-                        Coffee Blend
-                    </label>
-                </div>
-
-                <div className="flex flex-col gap-4 transition-all hover:bg-stone-50 p-8 font-thin rounded-3xl cursor-pointer">
-                    <img
-                        className="aspect-square"
-                        src={require('../../assets/region.webp')}
-                    ></img>
-                    <label className="text-3xl text-center w-full">
-                        Region
-                    </label>
-                </div>
-                <div className="flex flex-col gap-4 transition-all hover:bg-stone-50 p-8 font-thin rounded-3xl cursor-pointer">
-                    <img
-                        className="aspect-square"
-                        src={require('../../assets/merch.webp')}
-                    ></img>
-                    <label className="text-3xl text-center w-full">
-                        Merchendise
-                    </label>
-                </div>
+                <Link to={'/products/#blend'}>
+                    <div className="flex flex-col gap-4 transition-all hover:bg-stone-50 p-8 font-thin rounded-3xl cursor-pointer">
+                        <img
+                            className="aspect-square"
+                            src={require('../../assets/blend.webp')}
+                        ></img>
+                        <label className="text-3xl text-center w-full">
+                            Coffee Blend
+                        </label>
+                    </div>
+                </Link>
+                <Link to={'/products/#region'}>
+                    <div className="flex flex-col gap-4 transition-all hover:bg-stone-50 p-8 font-thin rounded-3xl cursor-pointer">
+                        <img
+                            className="aspect-square"
+                            src={require('../../assets/region.webp')}
+                        ></img>
+                        <label className="text-3xl text-center w-full">
+                            Region
+                        </label>
+                    </div>
+                </Link>
+                <Link to={'/products/#extras'}>
+                    <div className="flex flex-col gap-4 transition-all hover:bg-stone-100 p-8 font-thin rounded-3xl cursor-pointer">
+                        <img
+                            className="aspect-square"
+                            src={require('../../assets/merch.webp')}
+                        ></img>
+                        <label className="text-3xl text-center w-full">
+                            Merchendise
+                        </label>
+                    </div>
+                </Link>
             </div>
         </>
     )

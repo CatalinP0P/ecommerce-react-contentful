@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App'
 import { Auth0Provider } from '@auth0/auth0-react'
+import FirestoreProvider from './context/FirestoreContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -12,6 +13,8 @@ root.render(
             redirect_uri: window.location.origin,
         }}
     >
-        <App />
+        <FirestoreProvider>
+            <App />
+        </FirestoreProvider>
     </Auth0Provider>
 )
