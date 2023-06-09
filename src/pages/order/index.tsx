@@ -4,6 +4,7 @@ import { useFirestore } from '../../context/FirestoreContext'
 import CartPriceList from '../../components/CartPriceList'
 import OrderSuccess from './success'
 import * as emailjs from 'emailjs-com'
+import { setEmitFlags } from 'typescript'
 
 const templateId: any = process.env.REACT_APP_EMAILJS_TEMPLATE_ID
 const serviceId: any = process.env.REACT_APP_EMAILJS_SERVICE_ID
@@ -15,6 +16,7 @@ export default function Order() {
     const [fetchedData, setFetchedState] = useState(false)
     const [orderId, setOrderId] = useState<any>('')
     const [orderPlaced, setOrderState] = useState(false)
+    const [invoice, setInvoice] = useState<any>(null)
 
     const auth = useAuth0()
 
@@ -22,11 +24,12 @@ export default function Order() {
     const form = useRef<any>()
 
     const sendEmail = async (orderID: any) => {
+        const order = await firebaseContext?.getMyOrder(orderID)
+
         const params = {
-            to_name: 'testName',
+            to_name: order.adress.firstName,
             order_id: orderID,
-            to_email: 'catalinpce@gmail.com',
-            invoice: 'https://google.com',
+            to_email: order.adress.email,
         }
         emailjs
             .send(serviceId, templateId, params, publicKey)
@@ -49,10 +52,13 @@ export default function Order() {
         const formInputValues = Object.fromEntries(formData.entries())
         firebaseContext
             ?.placeOrder(formInputValues)
-            .then((response: string) => {
+            .then(async (response: string) => {
                 setOrderId(response)
-                sendEmail(response)
-                setOrderState(true)
+                firebaseContext.createInvoice(response).then((x: any) => {
+                    console.log(x)
+                    setInvoice(x)
+                    sendEmail(response)
+                })
             })
     }
 
@@ -62,8 +68,8 @@ export default function Order() {
         fetchData()
     }, [auth.isAuthenticated])
 
-    return orderPlaced ? (
-        <OrderSuccess orderID={orderId} />
+    return invoice != null ? (
+        <OrderSuccess invoice={invoice} />
     ) : (
         <>
             <h1 className="text-center text-6xl font-light text-stone-400 mt-4 mb-16">

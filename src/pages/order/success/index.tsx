@@ -6,12 +6,10 @@ import easyinvoice from 'easyinvoice'
 import { useNavigate } from 'react-router-dom'
 
 interface OrderSuccessProps {
-    orderID: any
+    invoice: any
 }
 
-const OrderSuccess: FC<OrderSuccessProps> = ({ orderID }) => {
-    const [invoice, setInvoice] = useState<any>()
-
+const OrderSuccess: FC<OrderSuccessProps> = ({ invoice }) => {
     const firestoreContext = useFirestore()
     const navigate = useNavigate()
 
@@ -19,95 +17,16 @@ const OrderSuccess: FC<OrderSuccessProps> = ({ orderID }) => {
         navigate('/')
     }
 
-    const fetchOrder = async () => {
-        const order = await firestoreContext?.getMyOrder(orderID)
-        const companyDetails = await client.getEntries({
-            content_type: 'companyInfo',
-        })
-        const dt = new Date(order.date)
-        const dateString = getDateString(dt)
-        order.date = dateString
-        console.log(order)
-
-        createInvoice(order, companyDetails.items[0].fields)
-    }
-
-    const getDateString = (dt: Date) => {
-        const year = dt.getFullYear()
-        const month = dt.getMonth()
-        const dateString = `${dt.getUTCDate()}-${month + 1}-${year}`
-        return dateString
-    }
-
-    const createInvoice = async (order: any, companyDetails: any) => {
-        const products: any = []
-        order.cart.forEach((product: any) => {
-            products.push({
-                quantity: product.quantity,
-                description: product.title,
-                'tax-rate': 19,
-                price: product.price / 1.19,
-            })
-        })
-        products.push({
-            quantity: 1,
-            description: 'Shipping',
-            'tax-rate': 0,
-            price: 10,
-        })
-        var data: any = {
-            images: {
-                logo: 'https:' + companyDetails.logo.fields.file.url,
-            },
-            sender: {
-                company: companyDetails.name,
-                zip: companyDetails.county,
-                address: companyDetails.street,
-                city: companyDetails.city,
-                country: companyDetails.country,
-                custom1: companyDetails.email,
-            },
-            client: {
-                company: companyDetails.name,
-                zip: companyDetails.county,
-                address: companyDetails.street,
-                city: companyDetails.city,
-                country: companyDetails.country,
-                custom1: companyDetails.email,
-            },
-            information: {
-                number: order.id,
-                date: new Date(order.date).toLocaleDateString(),
-                'due-date': new Date(
-                    new Date(order.date).getTime() + 14 * 24 * 60 * 60 * 1000
-                ).toLocaleDateString(),
-            },
-            products: products,
-            'bottom-notice': 'Thanks for ordering!',
-            settings: {
-                currency: 'EUR',
-            },
-        }
-        var elementId = 'pdf'
-        easyinvoice.createInvoice(data, function (result) {
-            setInvoice(result)
-            easyinvoice.render(elementId, result.pdf, function () {
-                console.log('Invoice rendered!')
-            })
-        })
-    }
-
     const download = async () => {
         if (invoice == null) return
-
         easyinvoice.download('invoice.pdf', invoice.pdf)
     }
 
     useEffect(() => {
-        ;(async () => {
-            fetchOrder().then(() => {})
-        })()
-    }, [])
+        easyinvoice.render('pdf', invoice.pdf, () => {
+            console.log('EasyInvoice: Invoice rendered')
+        })
+    })
 
     return (
         <>
@@ -124,9 +43,14 @@ const OrderSuccess: FC<OrderSuccessProps> = ({ orderID }) => {
                     </button>
                 </div>
                 <div className="flex flex-col items-center gap-32">
-                    <label className="text-6xl text-stone-700 font-extralight text-center block">
-                        Thanks for ordering
-                    </label>
+                    <div className="flex flex-col">
+                        <label className="text-6xl text-stone-700 font-extralight text-center block">
+                            Thanks for ordering
+                        </label>
+                        <label className="text-4xl text-stone-700 font-extralight text-center block mt-4">
+                            We sent you an email for cofirmation
+                        </label>
+                    </div>
                     <button onClick={() => goHome()} className={buttonClass}>
                         Go Back
                     </button>

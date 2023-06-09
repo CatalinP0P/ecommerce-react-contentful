@@ -27,7 +27,7 @@ export default function Product() {
 
     const addToCart = async (productID: string) => {
         if (quantity <= 0) return
-        
+
         for (let i = 0; i < quantity; i++) {
             const response = await firestoreContext?.addToCart(productID)
         }
@@ -48,13 +48,27 @@ export default function Product() {
                 </div>
                 <div className="w-[150px] h-[2px] bg-stone-400 mt-8 mb-4"></div>
                 <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8 py-8">
-                    <input
-                        type="number"
-                        value={quantity.toString()}
-                        onChange={(e) => setQuantity(parseInt(e.target.value))}
-                        className="col-span-2 md:col-span-1 lg:col-span-2 p-4 bg-stone-200 outline-none rounded-xl"
-                        placeholder="Quantity"
-                    />
+                    <div className="col-span-2 flex flex-row gap-4 items-center justify-center">
+                        <button
+                            className={inputButtonClass}
+                            onClick={() => {
+                                setQuantity((old: any) =>
+                                    old > 2 ? old - 1 : old
+                                )
+                            }}
+                        >
+                            -
+                        </button>
+                        <label>{quantity}</label>
+                        <button
+                            className={inputButtonClass}
+                            onClick={() => {
+                                setQuantity((old) => old + 1)
+                            }}
+                        >
+                            +
+                        </button>
+                    </div>
                     <button
                         className="text-stone-400 bg-stone-200 px-8 rounded-xl hover:bg-stone-400 transition-all hover:text-stone-100"
                         onClick={() => addToCart(product.fields.slug)}
@@ -70,3 +84,6 @@ export default function Product() {
         </div>
     ) : null
 }
+
+const inputButtonClass =
+    'h-[50px] w-[50px] text-stone-400 bg-stone-200 rounded-full text-md'

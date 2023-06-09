@@ -4,6 +4,7 @@ import app from '../../src/lib/firebase'
 import client from '../lib/contentful'
 import { toast } from 'react-toastify'
 import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
+import easyinvoice from 'easyinvoice'
 
 interface proivderProps {
     children: any
@@ -15,6 +16,7 @@ interface firebaseContextInterface {
     removeFromCart: (docID: string) => any
     placeOrder: (adress: any) => any
     getMyOrder: (orderID: any) => any
+    createInvoice: (orderID: any) => any
 }
 
 const FirestoreContext = createContext<firebaseContextInterface | null>(null)
@@ -158,6 +160,67 @@ const FirestoreProvider: FC<proivderProps> = ({ children }) => {
         return productsCart
     }
 
+    const createInvoice = async (orderId: any) => {
+        const order = await getMyOrder(orderId)
+        var companyDetails: any = await client.getEntries({
+            content_type: 'companyInfo',
+        })
+
+        companyDetails = companyDetails.items[0].fields
+
+        const products: any = []
+        order.cart.forEach((product: any) => {
+            products.push({
+                quantity: product.quantity,
+                description: product.title,
+                'tax-rate': 19,
+                price: product.price / 1.19,
+            })
+        })
+        products.push({
+            quantity: 1,
+            description: 'Shipping',
+            'tax-rate': 0,
+            price: 10,
+        })
+        var data: any = {
+            images: {
+                logo: 'https:' + companyDetails.logo.fields.file.url,
+            },
+            sender: {
+                company: companyDetails.name,
+                zip: companyDetails.county,
+                address: companyDetails.street,
+                city: companyDetails.city,
+                country: companyDetails.country,
+                custom1: companyDetails.email,
+            },
+            client: {
+                company: companyDetails.name,
+                zip: companyDetails.county,
+                address: companyDetails.street,
+                city: companyDetails.city,
+                country: companyDetails.country,
+                custom1: companyDetails.email,
+            },
+            information: {
+                number: order.id,
+                date: new Date(order.date).toLocaleDateString(),
+                'due-date': new Date(
+                    new Date(order.date).getTime() + 14 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString(),
+            },
+            products: products,
+            'bottom-notice': 'Thanks for ordering!',
+            settings: {
+                currency: 'EUR',
+            },
+        }
+        const response = await easyinvoice.createInvoice(data)
+        console.log(response)
+        return response
+    }
+
     return (
         <FirestoreContext.Provider
             value={{
@@ -166,6 +229,7 @@ const FirestoreProvider: FC<proivderProps> = ({ children }) => {
                 removeFromCart,
                 placeOrder,
                 getMyOrder,
+                createInvoice,
             }}
         >
             {children}

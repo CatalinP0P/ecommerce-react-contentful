@@ -65,13 +65,13 @@ export default function Products() {
 
             {
                 <>
-                    <h1
-                        className="text-6xl text-center pt-32 pb-16 text-stone-600 font-extralight"
-                        id="blend"
-                    >
+                    <h1 className="text-6xl text-center pt-32 text-stone-600 font-extralight">
                         Blend Coffee
                     </h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6 lg:gap-8">
+                    <div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6 lg:gap-8 pt-16"
+                        id="blend"
+                    >
                         {blendCoffee?.map((product: any) => {
                             return (
                                 <div key={product.fields.slug}>
@@ -85,13 +85,13 @@ export default function Products() {
 
             {
                 <>
-                    <h1
-                        className="text-6xl text-center pt-32 pb-16 text-stone-600 font-extralight"
-                        id="extras"
-                    >
+                    <h1 className="text-6xl text-center pt-32 pb-16 text-stone-600 font-extralight">
                         Extras
                     </h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6 lg:gap-8 mb-32">
+                    <div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6 lg:gap-8 mb-32"
+                        id="extras"
+                    >
                         {merch?.map((product: any) => {
                             return (
                                 <div key={product.fields.slug}>
