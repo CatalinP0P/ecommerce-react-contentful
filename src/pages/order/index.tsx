@@ -3,18 +3,40 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useFirestore } from '../../context/FirestoreContext'
 import CartPriceList from '../../components/CartPriceList'
 import OrderSuccess from './success'
+import * as emailjs from 'emailjs-com'
+
+const templateId: any = process.env.REACT_APP_EMAILJS_TEMPLATE_ID
+const serviceId: any = process.env.REACT_APP_EMAILJS_SERVICE_ID
+const publicKey: any = process.env.REACT_APP_EMAILJS_PUBLIC_KEY
 
 export default function Order() {
     const firebaseContext = useFirestore()
     const [myCart, setMyCart] = useState<any>([])
     const [fetchedData, setFetchedState] = useState(false)
-    const [orderId, setOrderId] = useState<string>('')
+    const [orderId, setOrderId] = useState<any>('')
     const [orderPlaced, setOrderState] = useState(false)
 
     const auth = useAuth0()
 
     // Form States
     const form = useRef<any>()
+
+    const sendEmail = async (orderID: any) => {
+        const params = {
+            to_name: 'testName',
+            order_id: orderID,
+            to_email: 'catalinpce@gmail.com',
+            invoice: 'https://google.com',
+        }
+        emailjs
+            .send(serviceId, templateId, params, publicKey)
+            .then((response: any) => {
+                console.log(response)
+            })
+            .catch((err: any) => {
+                console.log(err)
+            })
+    }
 
     const fetchData = async () => {
         const products = await firebaseContext?.getMyCart()
@@ -29,6 +51,7 @@ export default function Order() {
             ?.placeOrder(formInputValues)
             .then((response: string) => {
                 setOrderId(response)
+                sendEmail(response)
                 setOrderState(true)
             })
     }

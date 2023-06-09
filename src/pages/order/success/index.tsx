@@ -99,7 +99,7 @@ const OrderSuccess: FC<OrderSuccessProps> = ({ orderID }) => {
 
     const download = async () => {
         if (invoice == null) return
-        
+
         easyinvoice.download('invoice.pdf', invoice.pdf)
     }
 
